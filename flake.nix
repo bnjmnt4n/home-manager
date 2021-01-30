@@ -11,7 +11,8 @@
     lib = {
       hm = import ./modules/lib { lib = nixpkgs.lib; };
       homeManagerConfiguration = { configuration, system, homeDirectory
-        , username, stateVersion ? "20.09", extraSpecialArgs ? { }
+        , username, stateVersion ? "20.09", extraModules ? [ ]
+        , extraSpecialArgs ? { }
         , pkgs ? builtins.getAttr system nixpkgs.outputs.legacyPackages
         , check ? true }@args:
         assert nixpkgs.lib.versionAtLeast stateVersion "20.09";
@@ -20,7 +21,7 @@
           inherit pkgs check;
 
           configuration = { ... }: {
-            imports = [ configuration ];
+            imports = [ configuration ] ++ extraModules;
             home = { inherit stateVersion homeDirectory username; };
             nixpkgs = { inherit (pkgs) config overlays; };
           };
